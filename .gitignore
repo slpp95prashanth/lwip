@@ -1,0 +1,6 @@
+a.out
+*.o
+*~
+main.c
+tmplib/
+tags
