@@ -33,9 +33,9 @@
 
 /* Timer resolution in ms */
 
-#define ARP_TIMER (250)
-#define TCP_TIMER (250)
-#define IP_REASMY_TIMER (250)
+#define ARP_TIMER (5000000)
+#define TCP_TIMER (250000)
+#define IP_REASMY_TIMER (250000)
 
 #define SRC_MAC "c0:3f:d5:4d:46:e7"
 
@@ -93,32 +93,32 @@ void *timer(void *data)
 {
     struct timeval time;
 
-    unsigned int arp_ms, tcp_ms, ip_reass_ms, new_ms;
+    unsigned int arp_us, tcp_us, ip_reass_us, new_us;
 
     LWIP_DEBUGF(DUMP, ("%s \n", __func__));
 
     gettimeofday(&time, NULL);
 
-    arp_ms = tcp_ms = ip_reass_ms = time.tv_sec * 1000000 + time.tv_usec;
+    arp_us = tcp_us = ip_reass_us = time.tv_sec * 1000000 + time.tv_usec;
 
     while (1) {
 	gettimeofday(&time, NULL);
 
-	new_ms = time.tv_sec * 1000000 + time.tv_usec;
+	new_us = time.tv_sec * 1000000 + time.tv_usec;
 
-	if ((new_ms - arp_ms) >= (ARP_TIMER)) {
+	if ((new_us - arp_us) >= (ARP_TIMER)) {
 	    etharp_tmr();
-	    arp_ms = new_ms;
+	    arp_us = new_us;
 	}
 
-	if ((new_ms - tcp_ms) >= (TCP_TIMER)) {
+	if ((new_us - tcp_us) >= (TCP_TIMER)) {
 	    tcp_tmr();
-	    tcp_ms = new_ms;
+	    tcp_us = new_us;
 	}
 
-	if ((new_ms - ip_reass_ms) >= (IP_REASMY_TIMER)) {
+	if ((new_us - ip_reass_us) >= (IP_REASMY_TIMER)) {
 	    ip_reass_tmr();
-	    ip_reass_ms = new_ms;
+	    ip_reass_us = new_us;
 	}
     }
 

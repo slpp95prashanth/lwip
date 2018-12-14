@@ -205,6 +205,9 @@ etharp_tmr(void)
   u8_t i;
 
 //  LWIP_DEBUGF(ETHARP_DEBUG, ("etharp_timer\n"));
+
+//  printf("etharp_timer\n");
+
   /* remove expired entries from the ARP table */
   for (i = 0; i < ARP_TABLE_SIZE; ++i) {
     u8_t state = arp_table[i].state;
@@ -1315,4 +1318,32 @@ free_and_return:
   pbuf_free(p);
   return ERR_OK;
 }
+
+int dump_arp_table(void)
+{
+    ip_addr_t *ipaddr;
+    struct eth_addr *ethaddr;
+
+    int i;
+
+    printf("ipaddr	      ethaddr		     ctime\n");
+
+    for (i = 0; i < ARP_TABLE_SIZE; i++) {
+	if (arp_table[i].state == (ETHARP_STATE_EMPTY)) {
+	    continue ;
+	}
+
+	ipaddr = &arp_table[i].ipaddr;
+
+	ethaddr = &arp_table[i].ethaddr;
+
+	printf("%"U16_F".%"U16_F".%"U16_F".%"U16_F" %02"X16_F":%02"X16_F":%02"X16_F":%02"X16_F":%02"X16_F":%02"X16_F"%u""\n",
+		    ip4_addr1_16(ipaddr), ip4_addr2_16(ipaddr), ip4_addr3_16(ipaddr), ip4_addr4_16(ipaddr),
+		    ethaddr->addr[0], ethaddr->addr[1], ethaddr->addr[2],
+		    ethaddr->addr[3], ethaddr->addr[4], ethaddr->addr[5], arp_table[i].ctime);
+    }
+
+    return 0;
+}
+
 #endif /* LWIP_ARP || LWIP_ETHERNET */

@@ -1,7 +1,7 @@
 CC=gcc
 CCDEP=$(CC)
 
-CFLAGS += -DLWIP_DEBUG -g
+CFLAGS += -DLWIP_DEBUG -g -DSHELL
 ARFLAGS=rs
 
 TOPDIR=./
@@ -12,10 +12,15 @@ LWIPARCH=$(TOPDIR)/ports/x86
 #Set this to where you have the lwip core module checked out from CVS
 #default assumes it's a dir named lwip at the same level as the contrib module
 LWIPDIR=$(TOPDIR)/src
+APPDIR=$(TOPDIR)
+
 MCHINCDIR=$(TOPDIR)/include
 
 CFLAGS += $(CPPFLAGS) -I$(LWIPDIR)/include -I.              \
     -I$(LWIPDIR)/include/ipv4 -I $(LWIPARCH)/include
+
+LIBDIR=$(TOPDIR)
+LIB+= -llwip4 -lpthread
 
 # COREFILES, CORE4FILES: The minimum set of files needed for lwIP.
 COREFILES=$(LWIPDIR)/core/mem.c             \
@@ -40,11 +45,15 @@ CORE4FILES=$(LWIPDIR)/core/ipv4/icmp.c          \
     $(LWIPDIR)/core/ipv4/ip_addr.c          \
     $(LWIPDIR)/core/ipv4/ip_frag.c          \
     $(LWIPDIR)/core/ipv4/inet_chksum.c	    \
-    $(LWIPDIR)/netif/etharp.c		    \
-    $(LWIPDIR)/netif/ethernetif.c
+    $(LWIPDIR)/netif/etharp.c
+#    $(LWIPDIR)/netif/ethernetif.c
 
 # NETIFFILES: Files implementing various generic network interface functions.'
 NETIFFILES=$(LWIPARCH)/ethif.c
+
+APPFILES=$(APPDIR)/sh.c	\
+    $(APPDIR)/diag_printf.c \
+    $(APPDIR)/cmd-utils.c
 
 # LWIPFILES: All the above.
 LWIPFILES=$(COREFILES) $(CORE4FILES) $(NETIFFILES)
@@ -53,9 +62,12 @@ OBJS=$(LWIPFILES:.c=.o)
 
 LWIPLIB=liblwip4.a
 
-all compile: $(LWIPLIB)
+all compile: $(LWIPLIB) shell
 	mkdir -p $(TARGETDIR)
 	install $(LWIPLIB) $(TARGETDIR)
+
+shell: $(LWIPLIB)
+	$(CC) $(CFLAGS) $(APPFILES) -L $(LIBDIR) $(LIB) -o shell
 
 .PHONY: all depend compile clean
 
@@ -63,7 +75,7 @@ all compile: $(LWIPLIB)
 	$(CC) $(CFLAGS) -c $(@:.o=.c) -o $@
 
 clean:
-	rm -f *.o $(LWIPLIB) $(OBJS) .depend*
+	rm -f *.o $(LWIPLIB) $(OBJS) .depend* shell *~
 
 $(LWIPLIB): $(OBJS)
 	$(AR) $(ARFLAGS) $(LWIPLIB) $?
