@@ -15,6 +15,7 @@
 #define MEMP_NUM_ARP_QUEUE          10
 #define PBUF_POOL_SIZE              512
 #define LWIP_ARP                    1
+#define ETHARP_SUPPORT_STATIC_ENTRIES 1
 #define IP_REASS_MAX_PBUFS          64
 #define IP_FRAG_USES_STATIC_BUF     0
 #define IP_DEFAULT_TTL              255

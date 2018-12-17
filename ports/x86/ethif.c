@@ -1,6 +1,7 @@
 #include <lwip/ip_addr.h>
 #include <lwip/netif.h>
 #include <lwip/pbuf.h>
+#include <netif/etharp.h>
 
 #include <sys/time.h>
 #include <sys/sysinfo.h>
@@ -38,6 +39,9 @@
 #define IP_REASMY_TIMER (250000)
 
 #define SRC_MAC "c0:3f:d5:4d:46:e7"
+
+#define PRINT_IPADDR(str, ipaddr) printf(#str": %"U16_F".%"U16_F".%"U16_F".%"U16_F" ""\n",	    \
+                    ip4_addr1_16(ipaddr), ip4_addr2_16(ipaddr), ip4_addr3_16(ipaddr), ip4_addr4_16(ipaddr));
 
 struct _sock {
     int sock;
@@ -258,7 +262,7 @@ int eth_init(struct netif *netif)
 
     netif->state = &_sock;
 
-    return ;
+    return 0;
 }
 
 extern err_t ethernet_input(struct pbuf *, struct netif *);
@@ -266,18 +270,21 @@ extern err_t ethernet_input(struct pbuf *, struct netif *);
 int _main(void)
 {
     static struct netif netif;
-    struct ip_addr gw_addr;
-    struct ip_addr net_mask;
-
     struct _sock *_sock;
 
+    unsigned int gw_addr;
+    unsigned int net_mask;
+    unsigned int ip_addr;
     int i, ret;
-    unsigned int ip_addr = 0x0c0910ac;
 
     static pthread_t threadid;
 
-    memset(&gw_addr, '\0', (sizeof(struct ip_addr)));
-    memset(&net_mask, '\0', (sizeof(struct ip_addr)));
+    ip_addr = htonl(0xac10090c); /* 172.16.9.12 */
+    net_mask = htonl(0xffffff00); /* 255.255.255.0 */
+    gw_addr = htonl(0xac100901); /* 172.16.9.1 */
+
+//    memset(&gw_addr, '\0', (sizeof(struct ip_addr)));
+//    memset(&net_mask, '\0', (sizeof(struct ip_addr)));
 
 #if 0
     memset(&ip_addr, 0x10, (sizeof(struct ip_addr)));
@@ -343,3 +350,31 @@ int _main(void)
 
     return 0;
 }
+
+int dump_ifstats(char *name)
+{
+    struct netif *netif = netif_list;
+
+    ip_addr_t *ipaddr;
+    struct eth_addr *ethaddr;
+
+    while (netif) {
+	ipaddr = &netif->ip_addr;
+	ethaddr = netif->hwaddr;
+
+	printf("if: %s\n", netif->name);
+	printf("ipaddr: %"U16_F".%"U16_F".%"U16_F".%"U16_F" ""ethaddr:"" %02"X16_F":%02"X16_F":%02"X16_F":%02"X16_F":%02"X16_F":%02"X16_F"\n",
+		    ip4_addr1_16(ipaddr), ip4_addr2_16(ipaddr), ip4_addr3_16(ipaddr), ip4_addr4_16(ipaddr),
+		    ethaddr->addr[0], ethaddr->addr[1], ethaddr->addr[2],
+		    ethaddr->addr[3], ethaddr->addr[4], ethaddr->addr[5]);
+
+	PRINT_IPADDR(netmask, &netif->netmask);
+	PRINT_IPADDR(gw, &netif->gw);
+
+	printf("MTU: %u\n", netif->mtu);
+	netif = netif->next;
+    }
+
+    return 0;
+}
+

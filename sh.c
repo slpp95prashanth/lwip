@@ -11,6 +11,7 @@
 
 extern void *_main(void *);
 extern int _arp_cache(int, const char **);
+extern int _ifconf(int, const char **);
 
 struct cmd {
     char *name;
@@ -23,7 +24,8 @@ int _cmd_func(int argc, const char **arg)
 {
     int i;
 
-    static struct cmd cmds[] = {{"arp", _arp_cache}};
+    static struct cmd cmds[] = {{"arp", _arp_cache},
+				{"ifconfig", _ifconf}};
 
     int count = sizeof(cmds) / sizeof(cmds[(0)]);
 

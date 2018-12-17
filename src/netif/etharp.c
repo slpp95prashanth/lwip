@@ -1337,7 +1337,7 @@ int dump_arp_table(void)
 
 	ethaddr = &arp_table[i].ethaddr;
 
-	printf("%"U16_F".%"U16_F".%"U16_F".%"U16_F" %02"X16_F":%02"X16_F":%02"X16_F":%02"X16_F":%02"X16_F":%02"X16_F"%u""\n",
+	printf("%"U16_F".%"U16_F".%"U16_F".%"U16_F" %02"X16_F":%02"X16_F":%02"X16_F":%02"X16_F":%02"X16_F":%02"X16_F"  %u""\n",
 		    ip4_addr1_16(ipaddr), ip4_addr2_16(ipaddr), ip4_addr3_16(ipaddr), ip4_addr4_16(ipaddr),
 		    ethaddr->addr[0], ethaddr->addr[1], ethaddr->addr[2],
 		    ethaddr->addr[3], ethaddr->addr[4], ethaddr->addr[5], arp_table[i].ctime);

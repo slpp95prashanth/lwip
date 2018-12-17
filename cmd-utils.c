@@ -12,3 +12,8 @@ int _arp_cache(int argc, const char **arg)
     return 0;
 }
 
+int _ifconf(int argc, const char **arg)
+{
+    return dump_ifstats();
+}
+
