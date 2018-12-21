@@ -17,3 +17,7 @@ int _ifconf(int argc, const char **arg)
     return dump_ifstats();
 }
 
+int netstat(int argc, const char **arg)
+{
+    return dump_netstat();
+}

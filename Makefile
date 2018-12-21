@@ -1,7 +1,7 @@
 CC=gcc
 CCDEP=$(CC)
 
-CFLAGS += -DLWIP_DEBUG -g -DSHELL
+CFLAGS += -DLWIP_DEBUG -g -DSHELL -I ./apps/echoserver_raw/
 ARFLAGS=rs
 
 TOPDIR=./
@@ -53,7 +53,9 @@ NETIFFILES=$(LWIPARCH)/ethif.c
 
 APPFILES=$(APPDIR)/sh.c	\
     $(APPDIR)/diag_printf.c \
-    $(APPDIR)/cmd-utils.c
+    $(APPDIR)/cmd-utils.c   \
+    $(APPDIR)/httpd.c   \
+    $(TOPDIR)apps/echoserver_raw/echod.c
 
 # LWIPFILES: All the above.
 LWIPFILES=$(COREFILES) $(CORE4FILES) $(NETIFFILES)
@@ -71,11 +73,12 @@ shell: $(LWIPLIB)
 
 .PHONY: all depend compile clean
 
-%.o:
+%.o: $(@:.o=.c)
 	$(CC) $(CFLAGS) -c $(@:.o=.c) -o $@
 
 clean:
 	rm -f *.o $(LWIPLIB) $(OBJS) .depend* shell *~
+#	rm $(addsuffix *~,$(dir $(LWIPFILES)))
 
 $(LWIPLIB): $(OBJS)
 	$(AR) $(ARFLAGS) $(LWIPLIB) $?

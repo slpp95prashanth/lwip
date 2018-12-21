@@ -10,8 +10,12 @@
 //#define DEBUG
 
 extern void *_main(void *);
+
 extern int _arp_cache(int, const char **);
 extern int _ifconf(int, const char **);
+extern int echo_init(int, const char **);
+extern int netstat(int, const char **);
+extern int http_init(int, const char **);
 
 struct cmd {
     char *name;
@@ -25,7 +29,10 @@ int _cmd_func(int argc, const char **arg)
     int i;
 
     static struct cmd cmds[] = {{"arp", _arp_cache},
-				{"ifconfig", _ifconf}};
+				{"ifconfig", _ifconf},
+				{"netstat", netstat},
+				{"http", http_init},
+				{"echo", echo_init}};
 
     int count = sizeof(cmds) / sizeof(cmds[(0)]);
 
@@ -95,7 +102,7 @@ int _char_in(char ch)
 
 	case '\r':
 	case '\n':
-	    cmd[++index] = '\0';
+	    cmd[index++] = '\0';
 	    check_command(cmd);
 	    index = 0;
 	    printf("m-shell> ");

@@ -1632,4 +1632,7 @@ tcp_pcbs_sane(void)
 }
 #endif /* TCP_DEBUG */
 
+#ifdef SHELL_NETSTAT
+
+#endif /* SHELL_NETSTAT */
 #endif /* LWIP_TCP */

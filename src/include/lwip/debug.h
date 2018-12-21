@@ -79,7 +79,10 @@
  *  AND is of correct type AND is at least LWIP_DBG_LEVEL
  */
 #define LWIP_DEBUGF(debug, message) do { \
-				diag_printf message;   \
+				if ( \
+                                   ((debug) & LWIP_DBG_ON)) { \
+				    diag_printf message;   \
+				}			\
                              } while(0)
 #else  /* LWIP_DEBUG */
 #define LWIP_DEBUGF(debug, message) 

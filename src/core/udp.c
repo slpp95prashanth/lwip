@@ -741,8 +741,6 @@ udp_bind(struct udp_pcb *pcb, ip_addr_t *ipaddr, u16_t port)
     }
   }
 
-  ip_addr_set(&pcb->local_ip, ipaddr);
-
   /* no port specified? */
   if (port == 0) {
 #ifndef UDP_LOCAL_PORT_RANGE_START
@@ -963,4 +961,17 @@ udp_debug_print(struct udp_hdr *udphdr)
 }
 #endif /* UDP_DEBUG */
 
+int udp_pcb_dump(int count)
+{
+    struct udp_pcb *pcb;
+
+    LWIP_DEBUGF((UDP_DEBUG), ("UDP PCBS \n"));
+
+    for (pcb = udp_pcbs; pcb != NULL; pcb = pcb->next) {
+	    LWIP_DEBUGF((UDP_DEBUG), ("local port: %d remote port: %d", pcb->local_port, pcb->remote_port));
+	    LWIP_DEBUGF((UDP_DEBUG), ("\n"));
+    }
+
+    return 0;
+}
 #endif /* LWIP_UDP */

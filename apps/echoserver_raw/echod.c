@@ -117,6 +117,8 @@ err_t echo_recv(void *arg, struct tcp_pcb *pcb, struct pbuf *p, err_t err)
 {
   err_t err_send;
 
+  printf("%s: Packet received\n", __func__);
+
   if (p != NULL){
     /* Inform TCP that we have taken the data. */
     tcp_recved(pcb, p->tot_len);
@@ -160,6 +162,7 @@ err_t echo_accept(void *arg, struct tcp_pcb *pcb, err_t err)
 void echo_init(void)
 {
   struct tcp_pcb *pcb;
+  struct udp_pcb *pcb1;
 
   pcb = tcp_new();
   tcp_bind(pcb, IP_ADDR_ANY, ECHO_SERVER_PORT);
@@ -167,5 +170,11 @@ void echo_init(void)
   /* initialize callback arg and accept callback */
   tcp_arg(pcb, pcb);
   tcp_accept(pcb, echo_accept);
+
+  pcb1 = udp_new();
+
+  udp_bind(pcb1, IP_ADDR_ANY, ECHO_SERVER_PORT);
+
+  return 0;
 }
 

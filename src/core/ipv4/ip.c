@@ -497,18 +497,27 @@ ip_input(struct pbuf *p, struct netif *inp)
 #endif /* LWIP_UDPLITE */
       snmp_inc_ipindelivers();
       udp_input(p, inp);
+#ifdef LWIP_IP_PACKET_TYPE_COUNTERS
+      netif->ifinudp++;
+#endif
       break;
 #endif /* LWIP_UDP */
 #if LWIP_TCP
     case IP_PROTO_TCP:
       snmp_inc_ipindelivers();
       tcp_input(p, inp);
+#ifdef LWIP_IP_PACKET_TYPE_COUNTERS
+      netif->ifintcp++;
+#endif
       break;
 #endif /* LWIP_TCP */
 #if LWIP_ICMP
     case IP_PROTO_ICMP:
       snmp_inc_ipindelivers();
       icmp_input(p, inp);
+#ifdef LWIP_IP_PACKET_TYPE_COUNTERS
+      netif->ifinicmp++;
+#endif
       break;
 #endif /* LWIP_ICMP */
 #if LWIP_IGMP

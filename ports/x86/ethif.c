@@ -88,7 +88,7 @@ int send_pac(struct netif *netif, char *pac, size_t len)
         return ret;
     }
 
-    LWIP_DEBUGF(DUMP, ("Sending packet\n"));
+    LWIP_DEBUGF(DUMP, ("Sending packet Packet size = %p\n", ret));
 
     return 0;
 }
@@ -171,6 +171,8 @@ int eth_input(struct netif *netif, struct pbuf *p, ip_addr_t *ipaddr)
 #undef setsockopt
 #undef ioctl
 
+int etharp_output(struct netif *, struct pbuf *, ip_addr_t *);
+
 int eth_init(struct netif *netif)
 {
     int error;
@@ -195,7 +197,7 @@ int eth_init(struct netif *netif)
 
     uptime = s_info.uptime;
 
-    netif->output = eth_output;
+    netif->output = etharp_output;
 
     LWIP_DEBUGF(DUMP, ("netif->output = %p\n", netif->output));
 
@@ -279,7 +281,7 @@ int _main(void)
 
     static pthread_t threadid;
 
-    ip_addr = htonl(0xac10090c); /* 172.16.9.12 */
+    ip_addr = htonl(0xac100915); /* 172.16.9.21 */
     net_mask = htonl(0xffffff00); /* 255.255.255.0 */
     gw_addr = htonl(0xac100901); /* 172.16.9.1 */
 
@@ -378,3 +380,22 @@ int dump_ifstats(char *name)
     return 0;
 }
 
+int dump_netstat(void)
+{
+    struct netif *netif = netif_list;
+
+    while (netif) {
+	printf("if: %s\n", netif->name);
+
+	printf("TCP: %u, UDP: %u, ICMP: %u\n", netif->ifintcp, netif->ifinudp, netif->ifinicmp);
+
+	netif = netif->next;
+
+	tcp_debug_print_pcbs();
+
+	udp_pcb_dump();
+
+    }
+
+    return 0;
+}

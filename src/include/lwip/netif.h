@@ -207,6 +207,12 @@ struct netif {
   u32_t ifoutnucastpkts;
   u32_t ifoutdiscards;
 #endif /* LWIP_SNMP */
+#ifdef LWIP_IP_PACKET_TYPE_COUNTERS
+  u32_t ifinicmp;
+  u32_t ifintcp;
+  u32_t ifinudp;
+#endif /* LWIP_IP_PACKET_TYPE_COUNTERS */
+
 #if LWIP_IGMP
   /** This function could be called to add or delete a entry in the multicast
       filter table of the ethernet MAC.*/
